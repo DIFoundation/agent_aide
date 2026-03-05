@@ -3,11 +3,12 @@
 import { useState } from "react";
 import RiskCard from "@/components/command/RiskCard";
 import DisasterMap from "@/components/map/DisasterMap";
-// import ReactMarkdown from 'react-markdown';
+import { DisasterResponse } from "@/types/disaster";
+import ImageUpload from "@/components/vision/ImageUpload";
 
 export default function Dashboard() {
     const [input, setInput] = useState("");
-    const [response, setResponse] = useState<any>(null);
+    const [response, setResponse] = useState<DisasterResponse | null>(null);
     const [mapCenter, setMapCenter] = useState<[number, number] | undefined>();
     const [radius, setRadius] = useState<number | undefined>();
 
@@ -19,15 +20,21 @@ export default function Dashboard() {
         });
 
         const data = await res.json();
-        setResponse(data.data);
+        const ai = data.data as DisasterResponse;
+
+        setResponse(ai);
 
         // Temporary: default Lagos coordinates
-        setMapCenter([3.3792, 6.5244]);
-        setRadius(data.data.affected_radius_km);
+        setMapCenter([ai.coordinates.lng, ai.coordinates.lat]);
+        setRadius(ai.affected_radius_km);
 
         // setMapCenter(data.data.center);
         // setRadius(data.data.radius);
     };
+
+    function handleImageResult(data: any) {
+        setResponse(data);
+      }
 
     return (
         <div className="flex h-screen">
@@ -51,6 +58,8 @@ export default function Dashboard() {
                 >
                     Analyze
                 </button>
+
+                <ImageUpload onResult={handleImageResult} />
 
                 <div className="bg-gray-800 p-4 mt-4 rounded text-sm">
                     <div className="bg-gray-800 p-4 mt-4 rounded text-sm">

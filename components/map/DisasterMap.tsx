@@ -46,26 +46,27 @@ export default function DisasterMap({ center, radiusKm }: Props) {
       .setLngLat(center)
       .addTo(map);
 
-    // Convert km to meters
-    const radiusMeters = radiusKm * 1000;
+    map.on('style.load', () => {
+      const radiusMeters = radiusKm * 1000;
 
-    map.addSource("risk-circle", {
-      type: "geojson",
-      data: circleGeoJSON as any,
+      map.addSource("risk-circle", {
+        type: "geojson",
+        data: circleGeoJSON as any,
+      });
+
+      map.addLayer({
+        id: "risk-circle-layer",
+        type: "circle",
+        source: "risk-circle",
+        paint: {
+          "circle-radius": radiusMeters / 50, // visual scaling
+          "circle-color": "#ff3b30",
+          "circle-opacity": 0.3,
+        },
+      });
+
+      map.flyTo({ center, zoom: 11 });
     });
-
-    map.addLayer({
-      id: "risk-circle-layer",
-      type: "circle",
-      source: "risk-circle",
-      paint: {
-        "circle-radius": radiusMeters / 50, // visual scaling
-        "circle-color": "#ff3b30",
-        "circle-opacity": 0.3,
-      },
-    });
-
-    map.flyTo({ center, zoom: 11 });
 
   }, [center, radiusKm]);
 
