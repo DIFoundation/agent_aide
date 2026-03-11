@@ -38,10 +38,11 @@ export default function ImageUpload({ onResult }: Props) {
         type="file"
         accept="image/*"
         onChange={handleUpload}
-        className="text-sm"
+        className="text-sm cursor-pointer border rounded"
+        disabled={loading}
       />
 
-      {loading && <p className="text-xs mt-2">Analyzing image...</p>}
+      {loading ? <p className="text-xs mt-2">Analyzing image...</p> : <p className="text-xs mt-2">Upload image</p>}
     </div>
   );
 }

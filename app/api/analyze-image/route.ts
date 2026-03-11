@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { VISION_DISASTER_PROMPT } from "@/lib/ai/visionPrompt";
+import { DISASTER_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   });
 
   const result = await model.generateContent([
-    VISION_DISASTER_PROMPT,
+    DISASTER_SYSTEM_PROMPT,
     {
       inlineData: {
         data: Buffer.from(bytes).toString("base64"),
@@ -41,3 +41,27 @@ export async function POST(req: NextRequest) {
     });
   }
 }
+
+// export async function POST(req: Request) {
+//   try {
+//     const { image } = await req.json(); // base64 string
+//     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+//     const prompt = "Analyze this image for disaster-related risks. " + DISASTER_SYSTEM_PROMPT;
+
+//     const result = await model.generateContent([
+//       prompt,
+//       { inlineData: { data: image.split(",")[1], mimeType: "image/jpeg" } }
+//     ]);
+
+//     const text = result.response.text();
+//     // Clean JSON string if model adds markdown blocks
+//     const cleanedJson = text.replace(/```json|```/g, "").trim();
+//     const data = JSON.parse(cleanedJson);
+
+//     return NextResponse.json(data);
+//   } catch (error) {
+//     console.error("Vision Analysis Error:", error);
+//     return NextResponse.json({ error: "Failed to analyze image" }, { status: 500 });
+//   }
+// }
